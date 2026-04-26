@@ -148,7 +148,7 @@ export function OnboardingModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/85 px-4 py-6 backdrop-blur-xl">
+    <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-slate-950/85 px-4 py-6 backdrop-blur-xl">
       <div className="glass-panel relative w-full max-w-5xl overflow-hidden rounded-[2rem] border border-white/10 shadow-card">
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-cyan-300 via-sky-400 to-blue-500" />
 

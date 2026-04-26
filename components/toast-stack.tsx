@@ -12,7 +12,7 @@ export function ToastStack() {
   const { toasts, dismiss } = useToast();
 
   return (
-    <div className="pointer-events-none fixed right-4 top-4 z-50 flex w-[min(24rem,calc(100vw-2rem))] flex-col gap-3 sm:right-6 sm:top-6">
+    <div className="pointer-events-none fixed right-4 top-4 z-[10001] flex w-[min(24rem,calc(100vw-2rem))] flex-col gap-3 sm:right-6 sm:top-6">
       {toasts.map((toast) => (
         <div key={toast.id} className={`pointer-events-auto rounded-2xl border p-4 shadow-card backdrop-blur ${toneStyles[toast.tone]}`}>
           <div className="flex items-start justify-between gap-3">
