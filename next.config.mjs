@@ -5,7 +5,7 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: `${process.env.API_BACKEND_URL ?? 'http://localhost:8080'}/:path*`
+        destination: `${process.env.API_BACKEND_URL ?? 'https://crypto-wallet-gse7.onrender.com'}/:path*`
       }
     ];
   }
