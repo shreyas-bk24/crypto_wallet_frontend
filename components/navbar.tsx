@@ -40,14 +40,14 @@ export function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/5 bg-slate-950/70 backdrop-blur-xl">
+    <header className="sticky top-0 z-[9999] border-b border-white/10 bg-slate-950/95 backdrop-blur-md">
       <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 p-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-sky-400/20 bg-sky-400/10 shadow-glow">
             <span className="text-lg font-semibold text-sky-300">W</span>
           </div>
           <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Web3 Wallet</p>
+            <p className="text-xs uppercase tracking-[0.3em] text-slate-300">Web3 Wallet</p>
             <p className="font-display text-lg font-semibold text-white">Cryptonova</p>
           </div>
         </div>
@@ -57,7 +57,7 @@ export function Navbar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`rounded-full px-4 py-2 text-sm transition ${pathname?.startsWith(item.href) ? 'bg-white/10 text-white' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}
+              className={`rounded-full px-4 py-2 text-sm transition ${pathname?.startsWith(item.href) ? 'bg-white/10 text-white' : 'text-slate-200 hover:bg-white/5 hover:text-white'}`}
             >
               {item.label}
             </Link>
