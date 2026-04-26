@@ -11,7 +11,7 @@ import type {
 } from './types';
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8080',
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL ?? 'https://crypto-wallet-gse7.onrender.com',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json'
