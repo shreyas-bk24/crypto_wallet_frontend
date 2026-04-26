@@ -40,8 +40,8 @@ export function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-20 border-b border-white/5 bg-slate-950/70 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-50 border-b border-white/5 bg-slate-950/70 backdrop-blur-xl">
+      <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 p-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-sky-400/20 bg-sky-400/10 shadow-glow">
             <span className="text-lg font-semibold text-sky-300">W</span>
@@ -52,7 +52,7 @@ export function Navbar() {
           </div>
         </div>
 
-        <nav className="hidden items-center gap-2 md:flex">
+        <nav className="flex items-center gap-2 overflow-x-auto">
           {navItems.map((item) => (
             <Link
               key={item.href}
