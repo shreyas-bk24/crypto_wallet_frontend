@@ -1,0 +1,7 @@
+node_modules
+node_modules/
+.next/
+.env.local
+.github
+.vscode
+CRYPTO_WALLET.code-workspace
