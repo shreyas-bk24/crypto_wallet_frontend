@@ -1,13 +1,10 @@
 import axios, { isAxiosError } from 'axios';
-import { Wallet } from 'ethers';
-import { ethToWei, normalizeAddress, normalizePrivateKey } from './format';
+import { normalizeAddress } from './format';
 import type {
   ApiEnvelope,
   BalanceResponse,
-  SendTransactionResult,
   TransactionResponse,
-  TransactionsResponse,
-  WalletResponse
+  TransactionsResponse
 } from './types';
 
 const api = axios.create({
@@ -51,41 +48,11 @@ async function request<T>(path: string, init?: { method?: 'GET' | 'POST'; data?:
   }
 }
 
-export async function createWallet(label?: string): Promise<WalletResponse> {
-  const data = await request<{ wallet: WalletResponse }>('/wallet/create', {
-    method: 'POST',
-    data: { label: label ?? '' }
-  });
-
-  return data.wallet;
-}
-
 export async function getBalance(address: string): Promise<BalanceResponse> {
   const normalizedAddress = normalizeAddress(address);
   const data = await request<{ balance: BalanceResponse }>(`/wallet/balance/${normalizedAddress}`);
 
   return data.balance;
-}
-
-export async function sendTransaction(params: {
-  privateKey: string;
-  toAddress: string;
-  amountEth: string;
-}): Promise<SendTransactionResult> {
-  const amountWei = ethToWei(params.amountEth);
-  const normalizedPrivateKey = normalizePrivateKey(params.privateKey);
-  const normalizedToAddress = normalizeAddress(params.toAddress);
-
-  const data = await request<{ transaction: SendTransactionResult }>('/wallet/send', {
-    method: 'POST',
-    data: {
-      private_key: normalizedPrivateKey,
-      to_address: normalizedToAddress,
-      amount_wei: amountWei
-    }
-  });
-
-  return data.transaction;
 }
 
 export async function getTransactions(address: string): Promise<TransactionsResponse> {
@@ -107,11 +74,6 @@ export async function getTransactions(address: string): Promise<TransactionsResp
     address: typeof response?.address === 'string' && response.address ? response.address : normalizedAddress,
     transactions: normalizedTransactions
   };
-}
-
-export function deriveAddressFromPrivateKey(privateKey: string): string {
-  const wallet = new Wallet(normalizePrivateKey(privateKey));
-  return wallet.address;
 }
 
 export { api };

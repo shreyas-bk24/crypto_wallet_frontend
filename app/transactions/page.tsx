@@ -81,9 +81,9 @@ export default function TransactionsPage() {
   if (!wallet) {
     return (
       <section className="glass-panel rounded-[2rem] p-8 text-center shadow-card">
-        <h1 className="text-3xl font-semibold text-white">Transactions are available after onboarding</h1>
+        <h1 className="text-3xl font-semibold text-white">Connect your wallet to view transactions</h1>
         <button type="button" onClick={openOnboarding} className="mt-6 rounded-2xl bg-sky-400 px-6 py-3 font-medium text-slate-950 transition hover:bg-sky-300">
-          Open onboarding
+          Start onboarding
         </button>
       </section>
     );

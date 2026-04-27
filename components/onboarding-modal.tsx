@@ -1,121 +1,74 @@
 "use client";
 
 import Link from 'next/link';
-import { Wallet } from 'ethers';
-import { useMemo, useState } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createWallet } from '@/lib/api';
-import { etherscanAddressUrl, normalizePrivateKey, shortenAddress } from '@/lib/format';
+import { etherscanAddressUrl, shortenAddress } from '@/lib/format';
+import { switchToSepolia, isMetaMaskInstalled, getCurrentChainId, SEPOLIA_CHAIN_ID } from '@/lib/metamask';
 import { StepCard } from '@/components/step-card';
-import { WalletImportForm } from '@/components/wallet-import-form';
 import { useToast } from '@/providers/toast-provider';
 import { useWallet } from '@/providers/wallet-provider';
-
-type Mode = 'create' | 'import';
-
-type DraftWallet = {
-  address: string;
-  privateKey: string;
-};
 
 const faucetUrl = 'https://sepoliafaucet.com/';
 
 export function OnboardingModal() {
   const router = useRouter();
-  const { wallet, onboardingOpen, setWallet, finishOnboarding } = useWallet();
+  const { wallet, onboardingOpen, connectMetaMask, finishOnboarding, metaMaskInstalled, connecting, connectError } = useWallet();
   const { notify } = useToast();
-  const [mode, setMode] = useState<Mode>('create');
-  const [label, setLabel] = useState('My Wallet');
-  const [privateKey, setPrivateKey] = useState('');
-  const [draftWallet, setDraftWallet] = useState<DraftWallet | null>(wallet);
   const [step, setStep] = useState(1);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isCorrectNetwork, setIsCorrectNetwork] = useState(false);
+  const [switchingNetwork, setSwitchingNetwork] = useState(false);
 
-  const addressForPreview = draftWallet?.address ?? wallet?.address ?? '';
+  const addressForPreview = wallet?.address ?? '';
 
-  const stepProgress = useMemo(() => ['Create or import', 'Copy wallet address', 'Fund with faucet', 'Send your first transaction'], []);
+  const stepProgress = useMemo(() => ['Connect MetaMask', 'Verify Network', 'Fund with faucet', 'Send your first transaction'], []);
+
+  useEffect(() => {
+    if (wallet) {
+      // Check if user is on Sepolia
+      getCurrentChainId()
+        .then((chainId) => {
+          setIsCorrectNetwork(chainId === SEPOLIA_CHAIN_ID);
+        })
+        .catch(() => {
+          setIsCorrectNetwork(false);
+        });
+    }
+  }, [wallet]);
 
   if (!onboardingOpen) {
     return null;
   }
 
-  const validateImportPrivateKey = () => {
-    const raw = privateKey.trim();
-    const normalized = raw.startsWith('0x') ? raw.slice(2) : raw;
-
-    if (!normalized) {
-      return 'Enter a private key to import.';
-    }
-
-    if (!/^[0-9a-fA-F]{64}$/.test(normalized)) {
-      return 'Private key must be 64 hex characters.';
-    }
-
-    return null;
-  };
-
-  const buildImportedWallet = () => {
-    const normalizedPrivateKey = normalizePrivateKey(privateKey);
-    const importedWallet = new Wallet(normalizedPrivateKey);
-    return {
-      address: importedWallet.address,
-      privateKey: normalizedPrivateKey
-    } satisfies DraftWallet;
-  };
-
-  const createOrImportWallet = async () => {
-    if (loading) {
-      return;
-    }
-
+  const handleConnectMetaMask = async () => {
     setError(null);
-    setLoading(true);
+    await connectMetaMask();
+  };
+
+  const handleSwitchNetwork = async () => {
+    setSwitchingNetwork(true);
+    setError(null);
 
     try {
-      let nextWallet: DraftWallet;
-
-      if (mode === 'create') {
-        const response = await createWallet(label.trim() || 'My Wallet');
-        if (!response.privateKey) {
-          throw new Error('Wallet private key is missing in response.');
-        }
-
-        nextWallet = {
-          address: response.address,
-          privateKey: response.privateKey
-        };
-
-        notify({
-          title: 'Wallet created',
-          description: shortenAddress(nextWallet.address),
-          tone: 'success'
-        });
-      } else {
-        const validationError = validateImportPrivateKey();
-        if (validationError) {
-          setError(validationError);
-          return;
-        }
-
-        nextWallet = buildImportedWallet();
-        notify({
-          title: 'Wallet imported',
-          description: shortenAddress(nextWallet.address),
-          tone: 'success'
-        });
-      }
-
-      // Save immediately to localStorage so refreshes do not lose onboarding progress.
-      setWallet(nextWallet);
-      setDraftWallet(nextWallet);
-      setStep(2);
-    } catch (submitError) {
-      const message = submitError instanceof Error ? submitError.message : 'Unable to prepare wallet';
+      await switchToSepolia();
+      setIsCorrectNetwork(true);
+      setStep(3);
+      notify({
+        title: 'Network switched',
+        description: 'You are now on Sepolia',
+        tone: 'success'
+      });
+    } catch (switchError) {
+      const message = switchError instanceof Error ? switchError.message : 'Failed to switch network';
       setError(message);
-      notify({ title: 'Onboarding failed', description: message, tone: 'error' });
+      notify({
+        title: 'Network switch failed',
+        description: message,
+        tone: 'error'
+      });
     } finally {
-      setLoading(false);
+      setSwitchingNetwork(false);
     }
   };
 
@@ -133,16 +86,7 @@ export function OnboardingModal() {
   };
 
   const completeOnboarding = () => {
-    if (!draftWallet && !wallet) {
-      return;
-    }
-
-    const finalWallet = draftWallet ?? wallet;
-    if (!finalWallet) {
-      return;
-    }
-
-    finishOnboarding(finalWallet);
+    finishOnboarding();
     router.push('/dashboard');
     notify({ title: 'You are all set', description: 'Welcome to your dashboard.', tone: 'success' });
   };
@@ -157,14 +101,14 @@ export function OnboardingModal() {
             <p className="text-xs uppercase tracking-[0.4em] text-slate-500">First-time setup</p>
             <h1 className="mt-3 font-display text-4xl font-semibold tracking-tight text-white">Welcome to Cryptonova Wallet</h1>
             <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-300">
-              This quick setup takes under 30 seconds. No exchange account needed. No backend key storage. Browser localStorage only.
+              Connect your MetaMask wallet to get started. Your private keys stay securely in MetaMask. No backend storage. No compromises.
             </p>
 
             <div className="mt-6 flex flex-wrap gap-2">
               {stepProgress.map((labelStep, index) => {
                 const itemStep = index + 1;
-                const isActive = itemStep === step;
-                const isDone = itemStep < step;
+                const isActive = itemStep === step || (itemStep === 2 && wallet && step >= 2);
+                const isDone = itemStep < step || (itemStep === 2 && isCorrectNetwork && step >= 2);
                 return (
                   <span
                     key={labelStep}
@@ -177,73 +121,51 @@ export function OnboardingModal() {
             </div>
 
             <div className="mt-8 space-y-5">
-              {step === 1 ? (
-                <div className="space-y-4">
-                  <div className="flex gap-2 rounded-full border border-white/10 bg-white/[0.03] p-1 text-sm">
-                    {(['create', 'import'] as Mode[]).map((item) => (
-                      <button
-                        key={item}
-                        type="button"
-                        onClick={() => {
-                          setMode(item);
-                          setError(null);
-                        }}
-                        className={`flex-1 rounded-full px-4 py-2 transition ${mode === item ? 'bg-sky-400 text-slate-950' : 'text-slate-300 hover:bg-white/5'}`}
-                      >
-                        {item === 'create' ? 'Create wallet' : 'Import wallet'}
-                      </button>
-                    ))}
-                  </div>
-
-                  {mode === 'create' ? (
-                    <label className="grid gap-2">
-                      <span className="text-sm text-slate-300">Wallet label (optional)</span>
-                      <input
-                        value={label}
-                        onChange={(event) => setLabel(event.target.value)}
-                        placeholder="My Wallet"
-                        disabled={loading}
-                        className="rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-sky-400/40 focus:ring-2 focus:ring-sky-400/20"
-                      />
-                    </label>
-                  ) : (
-                    <WalletImportForm
-                      privateKey={privateKey}
-                      loading={loading}
-                      error={error}
-                      onChange={(value) => {
-                        setPrivateKey(value);
-                        if (error) {
-                          setError(null);
-                        }
-                      }}
-                      onImport={() => {
-                        void createOrImportWallet();
-                      }}
-                    />
-                  )}
-
-                  {mode === 'create' ? (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        void createOrImportWallet();
-                      }}
-                      disabled={loading}
-                      className="inline-flex w-full items-center justify-center rounded-2xl bg-sky-400 px-5 py-3 font-medium text-slate-950 transition hover:bg-sky-300 disabled:cursor-not-allowed disabled:opacity-60"
-                    >
-                      {loading ? 'Creating...' : 'Create wallet'}
-                    </button>
-                  ) : null}
-
-                  {mode === 'create' && error ? <p className="rounded-2xl border border-rose-400/20 bg-rose-400/10 px-4 py-3 text-sm text-rose-200">{error}</p> : null}
+              {!metaMaskInstalled ? (
+                <div className="rounded-2xl border border-rose-400/30 bg-rose-400/10 p-4 text-rose-200">
+                  <p className="text-sm font-medium">MetaMask not installed</p>
+                  <p className="mt-2 text-xs">Please install the MetaMask browser extension to continue.</p>
+                  <a
+                    href="https://metamask.io/download/"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-3 inline-block text-rose-300 hover:text-rose-200 text-sm"
+                  >
+                    Download MetaMask →
+                  </a>
                 </div>
               ) : null}
 
-              {step === 2 ? (
+              {step === 1 ? (
                 <div className="space-y-4">
                   <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-5">
-                    <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Wallet address</p>
+                    <p className="text-xs uppercase tracking-[0.35em] text-slate-500">What&apos;s next?</p>
+                    <p className="mt-3 text-sm text-slate-200">
+                      Click the button below to connect your MetaMask wallet. MetaMask will ask for permission to manage your account and send transactions on your behalf.
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleConnectMetaMask}
+                    disabled={connecting || !metaMaskInstalled}
+                    className="inline-flex w-full items-center justify-center rounded-2xl bg-sky-400 px-5 py-3 font-medium text-slate-950 transition hover:bg-sky-300 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {connecting ? 'Connecting...' : 'Connect MetaMask'}
+                  </button>
+
+                  {connectError || error ? (
+                    <p className="rounded-2xl border border-rose-400/20 bg-rose-400/10 px-4 py-3 text-sm text-rose-200">
+                      {connectError || error}
+                    </p>
+                  ) : null}
+                </div>
+              ) : null}
+
+              {wallet && step >= 2 ? (
+                <div className="space-y-4">
+                  <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-5">
+                    <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Connected address</p>
                     <p className="mt-3 break-all font-mono text-sm text-white">{addressForPreview}</p>
                     <div className="mt-4 flex flex-wrap gap-3">
                       <button
@@ -263,8 +185,45 @@ export function OnboardingModal() {
                       </a>
                     </div>
                   </div>
+                </div>
+              ) : null}
 
-                  <div className="flex flex-wrap gap-3">
+              {wallet && !isCorrectNetwork && step === 2 ? (
+                <div className="space-y-4">
+                  <div className="rounded-3xl border border-amber-400/30 bg-amber-400/10 p-5">
+                    <p className="text-xs uppercase tracking-[0.35em] text-amber-300">Network check</p>
+                    <p className="mt-3 text-sm text-amber-100">
+                      You&apos;re not on Sepolia network yet. Click the button below to switch to Sepolia.
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleSwitchNetwork}
+                    disabled={switchingNetwork}
+                    className="inline-flex w-full items-center justify-center rounded-2xl bg-amber-500 px-5 py-3 font-medium text-white transition hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {switchingNetwork ? 'Switching...' : 'Switch to Sepolia'}
+                  </button>
+
+                  {error ? (
+                    <p className="rounded-2xl border border-rose-400/20 bg-rose-400/10 px-4 py-3 text-sm text-rose-200">
+                      {error}
+                    </p>
+                  ) : null}
+                </div>
+              ) : null}
+
+              {isCorrectNetwork && wallet && step >= 2 ? (
+                <div className="space-y-4">
+                  <div className="rounded-3xl border border-emerald-400/30 bg-emerald-400/10 p-5">
+                    <p className="text-xs uppercase tracking-[0.35em] text-emerald-300">✓ On Sepolia</p>
+                    <p className="mt-3 text-sm text-emerald-100">
+                      Perfect! You&apos;re connected to the Sepolia test network.
+                    </p>
+                  </div>
+
+                  {step === 2 ? (
                     <button
                       type="button"
                       onClick={() => setStep(3)}
@@ -272,7 +231,7 @@ export function OnboardingModal() {
                     >
                       Continue
                     </button>
-                  </div>
+                  ) : null}
                 </div>
               ) : null}
 
@@ -311,7 +270,7 @@ export function OnboardingModal() {
                   <StepCard
                     step={4}
                     title="Send your first transaction"
-                    description="Go to the Send page, enter a recipient address, choose a small test amount, and submit your first transfer."
+                    description="Go to the Send page, enter a recipient address, choose a small test amount, and submit your first transfer via MetaMask popup."
                     ctaLabel="Open Send page"
                     ctaHref="/send"
                   />
@@ -339,28 +298,38 @@ export function OnboardingModal() {
 
           <aside className="p-6 sm:p-8">
             <div className="rounded-[1.75rem] border border-white/10 bg-[radial-gradient(circle_at_top,rgba(56,189,248,0.2),rgba(2,6,23,0.95))] p-6 shadow-glow">
-              <p className="text-xs uppercase tracking-[0.4em] text-sky-200/80">Demo guide</p>
-              <h2 className="mt-3 text-2xl font-semibold text-white">Want the full walkthrough?</h2>
+              <p className="text-xs uppercase tracking-[0.4em] text-sky-200/80">Security First</p>
+              <h2 className="mt-3 text-2xl font-semibold text-white">Why MetaMask?</h2>
               <p className="mt-3 text-sm leading-6 text-slate-300">
-                Open the demo page anytime for a recruiter-friendly, end-to-end flow of create, fund, send, and transaction tracking.
+                MetaMask keeps your private keys safe. No backend ever sees your keys. You control your wallet. Industry standard. Trusted by millions.
               </p>
+
+              <ul className="mt-6 space-y-3 text-xs text-slate-400">
+                <li className="flex gap-2">
+                  <span className="text-emerald-400">✓</span>
+                  <span>Private keys stay in MetaMask</span>
+                </li>
+                <li className="flex gap-2">
+                  <span className="text-emerald-400">✓</span>
+                  <span>You approve every transaction</span>
+                </li>
+                <li className="flex gap-2">
+                  <span className="text-emerald-400">✓</span>
+                  <span>Sepolia test network only</span>
+                </li>
+                <li className="flex gap-2">
+                  <span className="text-emerald-400">✓</span>
+                  <span>No password, no seed phrase needed here</span>
+                </li>
+              </ul>
 
               <div className="mt-6">
                 <Link
                   href="/demo"
-                  className="inline-flex w-full items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-medium text-slate-100 transition hover:border-sky-400/20 hover:bg-sky-400/10"
+                  className="inline-flex text-sky-300 hover:text-sky-200 text-sm transition"
                 >
-                  View Full Demo Guide
+                  Try demo walkthrough →
                 </Link>
-              </div>
-
-              <div className="mt-8 rounded-3xl border border-white/10 bg-slate-950/60 p-4">
-                <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Security model</p>
-                <ul className="mt-3 space-y-2 text-sm text-slate-200">
-                  <li>Private key stays in your browser localStorage.</li>
-                  <li>No authentication flow required.</li>
-                  <li>No private key is sent to backend for storage.</li>
-                </ul>
               </div>
             </div>
           </aside>
@@ -369,3 +338,4 @@ export function OnboardingModal() {
     </div>
   );
 }
+

@@ -1,10 +1,5 @@
 import { formatEther, getAddress, isAddress, parseEther } from 'ethers';
 
-export function normalizePrivateKey(privateKey: string): string {
-  const value = privateKey.trim();
-  return value.startsWith('0x') ? value.slice(2) : value;
-}
-
 export function normalizeAddress(address: string): string {
   if (!isAddress(address)) {
     throw new Error('Invalid wallet address');
@@ -39,6 +34,11 @@ export function weiToEth(wei: string): string {
 
 export function ethToWei(amountEth: string): string {
   return parseEther(amountEth).toString();
+}
+
+export function ethToWeiHex(amountEth: string): string {
+  const wei = parseEther(amountEth);
+  return '0x' + wei.toString(16);
 }
 
 export function formatNetworkName(networkName: string): string {

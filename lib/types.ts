@@ -1,11 +1,9 @@
 export type WalletSession = {
   address: string;
-  privateKey: string;
 };
 
 export type WalletResponse = {
   address: string;
-  privateKey?: string;
   label?: string;
   nonce?: number;
 };

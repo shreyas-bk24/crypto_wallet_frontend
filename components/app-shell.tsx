@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Navbar } from "./navbar";
 import { OnboardingModal } from "./onboarding-modal";
 import { ToastStack } from "./toast-stack";
+import { NetworkWarningBanner } from "./network-warning-banner";
 import { useWallet } from "@/providers/wallet-provider";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -31,6 +32,11 @@ const onboardingOpen = mounted ? walletState.onboardingOpen : false;
       {/* Navbar */}
       <div className="relative z-[9999]">
         <Navbar />
+      </div>
+
+      {/* Network Warning Banner */}
+      <div className="relative z-[9998]">
+        <NetworkWarningBanner />
       </div>
 
       {/* Main content */}

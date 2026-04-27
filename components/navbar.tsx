@@ -17,7 +17,7 @@ const navItems = [
 export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { wallet, openOnboarding, clearWallet, onboardingComplete, onboardingOpen } = useWallet();
+  const { wallet, openOnboarding, disconnectWallet, connectMetaMask, networkStatus, switchingNetwork, switchToSepolia } = useWallet();
   const { notify } = useToast();
 
   const address = wallet?.address ?? null;
@@ -32,11 +32,18 @@ export function Navbar() {
     notify({ title: 'Address copied', description: shortenAddress(address), tone: 'success' });
   };
 
-  const handleReset = () => {
-    clearWallet();
-    openOnboarding();
+  const handleCopyOrConnect = () => {
+    if (address) {
+      handleCopy();
+    } else {
+      connectMetaMask();
+    }
+  };
+
+  const handleDisconnect = () => {
+    disconnectWallet();
     router.push('/');
-    notify({ title: 'Wallet cleared', description: 'You can create or import a new wallet now.', tone: 'info' });
+    notify({ title: 'Wallet disconnected', description: 'You have been disconnected.', tone: 'info' });
   };
 
   return (
@@ -48,62 +55,82 @@ export function Navbar() {
           </div>
           <div>
             <p className="text-xs uppercase tracking-[0.3em] text-slate-300">Web3 Wallet</p>
-            <p className="font-display text-lg font-semibold text-white">Cryptonova</p>
+            <p className="text-sm font-semibold text-white">{activeLabel}</p>
           </div>
         </div>
 
-        <nav className="flex items-center gap-2 overflow-x-auto">
+        <nav className="hidden flex-1 items-center justify-center gap-1 sm:flex lg:gap-2">
           {navItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className={`rounded-full px-4 py-2 text-sm transition ${pathname?.startsWith(item.href) ? 'bg-white/10 text-white' : 'text-slate-200 hover:bg-white/5 hover:text-white'}`}
+              className={`rounded-2xl px-4 py-2 text-sm transition ${pathname?.startsWith(item.href) ? 'bg-sky-400/20 text-sky-100' : 'text-slate-400 hover:text-slate-100'}`}
             >
               {item.label}
             </Link>
           ))}
         </nav>
 
-        <div className="flex items-center gap-2">
-          <span className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-xs text-emerald-300 sm:inline-flex">
-            {onboardingComplete ? 'Session ready' : activeLabel}
-          </span>
+        <div className="flex items-center gap-2 sm:gap-3">
+          {address && (
+            <>
+              {networkStatus === 'connected' && (
+                <div className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-500 bg-opacity-10 border border-emerald-500 border-opacity-30">
+                  <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="text-emerald-400 text-sm font-medium">Sepolia</span>
+                </div>
+              )}
+              {networkStatus === 'wrong-network' && (
+                <button
+                  type="button"
+                  onClick={switchToSepolia}
+                  disabled={switchingNetwork}
+                  className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg bg-red-500 bg-opacity-10 border border-red-500 border-opacity-30 hover:bg-opacity-20 disabled:opacity-50 transition-all"
+                >
+                  <div className="w-2 h-2 rounded-full bg-red-400 animate-pulse" />
+                  <span className="text-red-400 text-sm font-medium">
+                    {switchingNetwork ? 'Switching...' : 'Wrong Network'}
+                  </span>
+                </button>
+              )}
+            </>
+          )}
           {address ? (
+            <>
+              <a
+                href={etherscanAddressUrl(address)}
+                target="_blank"
+                rel="noreferrer"
+                className="hidden rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200 transition hover:border-sky-400/20 hover:bg-sky-400/10 sm:block"
+              >
+                {shortenAddress(address)}
+              </a>
+              <button
+                type="button"
+                onClick={handleCopy}
+                className="rounded-2xl bg-sky-400 px-4 py-2 text-sm font-medium text-slate-950 transition hover:bg-sky-300 sm:hidden"
+              >
+                {shortenAddress(address)}
+              </button>
+              <button
+                type="button"
+                onClick={handleDisconnect}
+                className="rounded-2xl border border-rose-400/20 bg-rose-400/10 px-4 py-2 text-sm text-rose-200 transition hover:border-rose-400/40 hover:bg-rose-400/20"
+              >
+                Disconnect
+              </button>
+            </>
+          ) : (
             <button
               type="button"
-              onClick={handleCopy}
-              className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200 transition hover:border-sky-400/30 hover:bg-sky-400/10 sm:inline-flex"
+              onClick={handleCopyOrConnect}
+              className="rounded-2xl bg-sky-400 px-4 py-2 text-sm font-medium text-slate-950 transition hover:bg-sky-300"
             >
-              {shortenAddress(address)}
+              Connect Wallet
             </button>
-          ) : null}
-          <button
-            type="button"
-            onClick={onboardingOpen ? undefined : openOnboarding}
-            className="rounded-full bg-sky-400 px-4 py-2 text-sm font-medium text-slate-950 transition hover:bg-sky-300"
-          >
-            {wallet ? 'Manage wallet' : 'Get started'}
-          </button>
-          {wallet ? (
-            <button
-              type="button"
-              onClick={handleReset}
-              className="rounded-full border border-rose-400/20 bg-rose-400/10 px-4 py-2 text-sm text-rose-200 transition hover:bg-rose-400/20 lg:inline-flex"
-            >
-              Reset
-            </button>
-          ) : null}
+          )}
         </div>
       </div>
-
-      {address ? (
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 pb-3 text-xs text-slate-500 sm:px-6 lg:px-8">
-          <span className="truncate">Active wallet: {shortenAddress(address, 6)}</span>
-          <a className="hover:text-sky-300" href={etherscanAddressUrl(address)} target="_blank" rel="noreferrer">
-            View on Etherscan
-          </a>
-        </div>
-      ) : null}
     </header>
   );
 }

@@ -8,22 +8,22 @@ export function WalletCard({ wallet }: { wallet: WalletSession }) {
     <section className="glass-panel rounded-[2rem] p-6 shadow-card">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Wallet session</p>
-          <h2 className="mt-2 text-2xl font-semibold text-white">Secure local session</h2>
+          <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Wallet connection</p>
+          <h2 className="mt-2 text-2xl font-semibold text-white">MetaMask connected</h2>
         </div>
         <span className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-xs text-emerald-300">
-          Local only
+          Secure
         </span>
       </div>
 
       <div className="mt-6 space-y-4 rounded-3xl border border-white/5 bg-white/[0.03] p-4">
         <div>
-          <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Address</p>
+          <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Connected address</p>
           <p className="mt-2 break-all font-mono text-sm text-slate-100">{wallet.address}</p>
         </div>
         <div>
-          <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Private key</p>
-          <p className="mt-2 break-all font-mono text-sm text-slate-400">Stored only in browser memory and localStorage</p>
+          <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Security</p>
+          <p className="mt-2 text-sm text-slate-400">Your private key is safely stored in MetaMask. The backend never sees it.</p>
         </div>
       </div>
 
