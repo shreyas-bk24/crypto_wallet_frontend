@@ -80,9 +80,9 @@ export default function TransactionsPage() {
 
   if (!wallet) {
     return (
-      <section className="glass-panel rounded-[2rem] p-8 text-center shadow-card">
-        <h1 className="text-3xl font-semibold text-white">Connect your wallet to view transactions</h1>
-        <button type="button" onClick={openOnboarding} className="mt-6 rounded-2xl bg-sky-400 px-6 py-3 font-medium text-slate-950 transition hover:bg-sky-300">
+      <section className="glass-panel rounded-[2rem] p-6 text-center shadow-card sm:p-8">
+        <h1 className="text-2xl font-semibold text-white sm:text-3xl">Connect your wallet to view transactions</h1>
+        <button type="button" onClick={openOnboarding} className="mt-6 min-h-11 rounded-2xl bg-sky-400 px-6 py-3 font-medium text-slate-950 transition hover:bg-sky-300">
           Start onboarding
         </button>
       </section>
@@ -91,7 +91,7 @@ export default function TransactionsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-end">
+      <div className="flex justify-stretch sm:justify-end">
         <button
           type="button"
           onClick={() => {
@@ -100,7 +100,7 @@ export default function TransactionsPage() {
             }
           }}
           disabled={loading}
-          className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200 transition hover:border-sky-400/20 hover:bg-sky-400/10 disabled:cursor-not-allowed disabled:opacity-60"
+          className="min-h-10 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200 transition hover:border-sky-400/20 hover:bg-sky-400/10 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
         >
           {loading ? 'Refreshing...' : 'Refresh'}
         </button>

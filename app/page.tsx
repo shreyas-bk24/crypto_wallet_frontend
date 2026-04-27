@@ -24,12 +24,12 @@ export default function HomePage() {
   }
 
   return (
-    <section className="relative overflow-hidden rounded-[2rem] border border-white/5 bg-white/[0.03] p-8 shadow-card sm:p-12 lg:p-16">
+    <section className="relative overflow-hidden rounded-[2rem] border border-white/5 bg-white/[0.03] p-6 shadow-card sm:p-12 lg:p-16">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.2),transparent_35%),radial-gradient(circle_at_bottom_right,rgba(14,165,233,0.16),transparent_30%)]" />
-      <div className="relative grid gap-12 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
+      <div className="relative grid grid-cols-1 gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
         <div>
           <p className="text-xs uppercase tracking-[0.5em] text-slate-500">Web3 wallet frontend</p>
-          <h1 className="mt-5 max-w-3xl font-display text-5xl font-semibold tracking-tight text-white text-balance sm:text-7xl">
+          <h1 className="mt-5 max-w-3xl font-display text-4xl font-semibold tracking-tight text-white text-balance sm:text-7xl">
             Minimal wallet UX for Ethereum Sepolia.
           </h1>
           <p className="mt-6 max-w-2xl text-base leading-7 text-slate-400 sm:text-lg">

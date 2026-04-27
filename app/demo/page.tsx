@@ -8,7 +8,7 @@ export default function DemoPage() {
     <section className="mx-auto max-w-4xl space-y-6">
       <header className="glass-panel rounded-[2rem] p-6 shadow-card sm:p-8">
         <p className="text-xs uppercase tracking-[0.4em] text-slate-500">Product walkthrough</p>
-        <h1 className="mt-3 font-display text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+        <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight text-white sm:text-5xl">
           Crypto Wallet Demo (Go + Ethereum Sepolia)
         </h1>
         <p className="mt-4 max-w-3xl text-sm leading-6 text-slate-300">

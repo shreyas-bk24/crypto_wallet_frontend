@@ -159,7 +159,7 @@ export function SendForm() {
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Send transaction</p>
-          <h1 className="mt-2 text-3xl font-semibold text-white">Move ETH in a few seconds</h1>
+          <h1 className="mt-2 text-2xl font-semibold text-white sm:text-3xl">Move ETH in a few seconds</h1>
         </div>
         <span className="rounded-full border border-sky-400/20 bg-sky-400/10 px-3 py-1 text-xs text-sky-200">
           Sepolia only
@@ -231,7 +231,7 @@ export function SendForm() {
         <button
           type="submit"
           disabled={pending || txStatus !== 'idle' || !wallet || networkStatus !== 'connected'}
-          className="inline-flex items-center justify-center rounded-2xl bg-sky-400 px-5 py-3 font-medium text-slate-950 transition hover:bg-sky-300 disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex min-h-11 items-center justify-center rounded-2xl bg-sky-400 px-5 py-3 font-medium text-slate-950 transition hover:bg-sky-300 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {getLoadingMessage()}
         </button>

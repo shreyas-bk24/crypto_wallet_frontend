@@ -92,14 +92,14 @@ export function OnboardingModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-slate-950/85 px-4 py-6 backdrop-blur-xl">
-      <div className="glass-panel relative w-full max-w-5xl overflow-hidden rounded-[2rem] border border-white/10 shadow-card">
+    <div className="fixed inset-0 z-[10000] flex items-start justify-center overflow-y-auto bg-slate-950/85 px-4 py-4 backdrop-blur-xl sm:items-center sm:py-6">
+      <div className="glass-panel relative w-full max-w-5xl overflow-hidden rounded-[2rem] border border-white/10 shadow-card max-h-[calc(100dvh-2rem)] overflow-y-auto sm:max-h-[calc(100dvh-3rem)]">
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-cyan-300 via-sky-400 to-blue-500" />
 
         <div className="grid lg:grid-cols-[1.1fr_0.9fr]">
-          <section className="border-b border-white/10 p-6 sm:p-8 lg:border-b-0 lg:border-r">
+          <section className="border-b border-white/10 p-5 sm:p-8 lg:border-b-0 lg:border-r">
             <p className="text-xs uppercase tracking-[0.4em] text-slate-500">First-time setup</p>
-            <h1 className="mt-3 font-display text-4xl font-semibold tracking-tight text-white">Welcome to Cryptonova Wallet</h1>
+            <h1 className="mt-3 font-display text-3xl font-semibold tracking-tight text-white sm:text-4xl">Welcome to Cryptonova Wallet</h1>
             <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-300">
               Connect your MetaMask wallet to get started. Your private keys stay securely in MetaMask. No backend storage. No compromises.
             </p>
@@ -296,7 +296,7 @@ export function OnboardingModal() {
             </div>
           </section>
 
-          <aside className="p-6 sm:p-8">
+          <aside className="p-5 sm:p-8">
             <div className="rounded-[1.75rem] border border-white/10 bg-[radial-gradient(circle_at_top,rgba(56,189,248,0.2),rgba(2,6,23,0.95))] p-6 shadow-glow">
               <p className="text-xs uppercase tracking-[0.4em] text-sky-200/80">Security First</p>
               <h2 className="mt-3 text-2xl font-semibold text-white">Why MetaMask?</h2>

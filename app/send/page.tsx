@@ -7,12 +7,12 @@ export default function SendPage() {
   const { wallet } = useWallet();
 
   return (
-    <div className="grid gap-6 xl:grid-cols-[1fr_0.75fr]">
+    <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_0.75fr]">
       <SendForm />
 
       <aside className="glass-panel rounded-[2rem] p-6 shadow-card sm:p-8">
         <p className="text-xs uppercase tracking-[0.35em] text-slate-500">Safe sending</p>
-        <h2 className="mt-2 text-3xl font-semibold text-white">MetaMask handles the rest.</h2>
+        <h2 className="mt-2 text-2xl font-semibold text-white sm:text-3xl">MetaMask handles the rest.</h2>
         <div className="mt-6 space-y-4 text-sm text-slate-400">
           <p>1. Paste a valid Sepolia recipient address.</p>
           <p>2. Enter the amount in ETH.</p>

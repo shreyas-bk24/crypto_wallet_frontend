@@ -70,9 +70,9 @@ export default function DashboardPage() {
 
   if (!wallet) {
     return (
-      <section className="glass-panel rounded-[2rem] p-8 text-center shadow-card">
+      <section className="glass-panel rounded-[2rem] p-6 text-center shadow-card sm:p-8">
         <p className="text-xs uppercase tracking-[0.35em] text-slate-500">No wallet connected</p>
-        <h1 className="mt-3 text-3xl font-semibold text-white">Connect your MetaMask wallet</h1>
+        <h1 className="mt-3 text-2xl font-semibold text-white sm:text-3xl">Connect your MetaMask wallet</h1>
         <p className="mx-auto mt-4 max-w-xl text-sm text-slate-400">
           Use the connect button in the navbar or start the onboarding to connect your MetaMask wallet and load your balance.
         </p>
@@ -88,7 +88,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
+    <div className="grid grid-cols-1 gap-6 xl:grid-cols-[0.95fr_1.05fr]">
       <div className="space-y-6">
         <WalletCard wallet={wallet} />
 

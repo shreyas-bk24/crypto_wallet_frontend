@@ -13,7 +13,7 @@ export function NetworkWarningBanner() {
   return (
     <div className="w-full bg-gradient-to-r from-red-950/80 to-orange-950/80 border-b border-red-700/50 backdrop-blur-sm">
       <div className="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center sm:gap-4">
           <div className="flex items-center gap-3">
             <div className="text-2xl">⚠️</div>
             <div>
@@ -24,7 +24,7 @@ export function NetworkWarningBanner() {
           <button
             onClick={switchToSepolia}
             disabled={switchingNetwork}
-            className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 disabled:bg-red-700 disabled:opacity-50 text-white font-medium text-sm transition-all whitespace-nowrap"
+            className="min-h-10 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 disabled:bg-red-700 disabled:opacity-50 text-white font-medium text-sm transition-all whitespace-nowrap"
           >
             {switchingNetwork ? 'Switching...' : 'Switch to Sepolia'}
           </button>

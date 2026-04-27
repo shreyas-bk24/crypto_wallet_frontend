@@ -71,7 +71,7 @@ export function Navbar() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
           {address && (
             <>
               {networkStatus === 'connected' && (
@@ -124,13 +124,27 @@ export function Navbar() {
             <button
               type="button"
               onClick={handleCopyOrConnect}
-              className="rounded-2xl bg-sky-400 px-4 py-2 text-sm font-medium text-slate-950 transition hover:bg-sky-300"
+              className="min-h-10 rounded-2xl bg-sky-400 px-4 py-2 text-sm font-medium text-slate-950 transition hover:bg-sky-300"
             >
               Connect Wallet
             </button>
           )}
         </div>
       </div>
+
+      <nav className="sm:hidden border-t border-white/10 px-4 pb-2 pt-1">
+        <div className="-mx-1 flex gap-2 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
+          {navItems.map((item) => (
+            <Link
+              key={`mobile-${item.href}`}
+              href={item.href}
+              className={`whitespace-nowrap rounded-xl px-3 py-2 text-sm transition ${pathname?.startsWith(item.href) ? 'bg-sky-400/20 text-sky-100' : 'text-slate-400 hover:text-slate-100'}`}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </div>
+      </nav>
     </header>
   );
 }

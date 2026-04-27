@@ -19,15 +19,15 @@ export function TransactionList({ transactions }: { transactions: TransactionVie
       <div className="mt-6 space-y-3">
         {transactions.length ? transactions.map((transaction) => (
           <article key={transaction.hash} className="rounded-3xl border border-white/5 bg-white/[0.03] p-4 transition hover:border-sky-400/20 hover:bg-white/[0.05]">
-            <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="font-mono text-sm text-white">{shortenHash(transaction.hash)}</p>
                 <p className="mt-1 text-xs text-slate-500">
                   {shortenAddress(transaction.from, 5)} → {shortenAddress(transaction.to, 5)}
                 </p>
               </div>
-              <div className="text-right">
-                <p className="text-lg font-semibold text-white">{weiToEth(transaction.amount_wei)} ETH</p>
+              <div className="text-left sm:text-right">
+                <p className="text-base font-semibold text-white sm:text-lg">{weiToEth(transaction.amount_wei)} ETH</p>
                 <p className={`text-xs uppercase tracking-[0.35em] ${transaction.direction === 'incoming' ? 'text-emerald-300' : 'text-sky-300'}`}>
                   {transaction.direction}
                 </p>
