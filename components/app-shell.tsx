@@ -23,7 +23,7 @@ useEffect(() => {
 const onboardingOpen = mounted ? walletState.onboardingOpen : false;
 
   return (
-    <div className="relative min-h-[100dvh] overflow-x-hidden overflow-y-auto">
+    <div className="relative min-h-[100dvh] overflow-x-hidden">
 
       {/* Background effects */}
       <div className="pointer-events-none absolute inset-0 z-0 grid-fade opacity-30" />
@@ -40,7 +40,7 @@ const onboardingOpen = mounted ? walletState.onboardingOpen : false;
       </div>
 
       {/* Main content */}
-      <main className="relative z-10 mx-auto w-full max-w-7xl px-4 pb-16 pt-24 sm:px-6 lg:px-8">
+      <main className="relative z-10 mx-auto w-full max-w-7xl px-4 pb-16 pt-20 sm:px-6 sm:pt-24 lg:px-8">
         {children}
       </main>
 
